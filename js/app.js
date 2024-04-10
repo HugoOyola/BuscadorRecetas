@@ -33,10 +33,10 @@ function iniciarApp() {
   }
 
   function mostrarRecetas(recetas = []) {
-    limpiarHtml(resultado)
+    limpiarHtml(resultado);
 
     const heading = document.createElement("H2");
-    heading.classList.add("text-center", "text-black","my-5");
+    heading.classList.add("text-center", "text-black", "my-5");
     heading.textContent = recetas.length ? "Recetas" : "No se encontraron recetas";
     resultado.appendChild(heading);
 
@@ -69,7 +69,7 @@ function iniciarApp() {
       // recetaBottun.dataset.bsToggle = "modal"
       recetaBottun.onclick = () => {
         seleccionarReceta(idMeal);
-      }
+      };
 
       // Inyectar en el codigo HTML
       recetaCardBody.appendChild(recetaHeading);
@@ -81,10 +81,10 @@ function iniciarApp() {
       recetaContenedor.appendChild(recetaCard);
 
       resultado.appendChild(recetaContenedor);
-    })
+    });
   }
 
-  function seleccionarReceta(id){
+  function seleccionarReceta(id) {
     const url = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`;
 
     fetch(url)
@@ -92,7 +92,7 @@ function iniciarApp() {
       .then((resultado) => mostrarRecetaModal(resultado.meals[0]));
   }
 
-  function mostrarRecetaModal(receta){
+  function mostrarRecetaModal(receta) {
     const { idMeal, strInstructions, strMeal, strMealThumb } = receta;
 
     // Añadir contenido modal
@@ -107,36 +107,52 @@ function iniciarApp() {
       <h3 class="my-3">Ingredientes y Cantidades:</h3>
     `;
 
-    const listGroup = document.createElement('UL')
-    listGroup.classList.add('list-group')
+    const listGroup = document.createElement("UL");
+    listGroup.classList.add("list-group");
     // Muestra cantidades e ingredientes
-    for(let i = 1; i<= 20; i++){
+    for (let i = 1; i <= 20; i++) {
       // console.log(receta[`strIngredient${i}`]);
-      if(receta[`strIngredient${i}`]){
-        const ingrediente = receta[`strIngredient${i}`]
-        const cantidad = receta[`strMeasure${i}`]
+      if (receta[`strIngredient${i}`]) {
+        const ingrediente = receta[`strIngredient${i}`];
+        const cantidad = receta[`strMeasure${i}`];
 
-        const ingredienteLi = document.createElement("LI")
-        ingredienteLi.classList.add('list-group-item');
-        ingredienteLi.textContent = `${ingrediente} - ${cantidad}`
+        const ingredienteLi = document.createElement("LI");
+        ingredienteLi.classList.add("list-group-item");
+        ingredienteLi.textContent = `${ingrediente} - ${cantidad}`;
 
-        listGroup.appendChild(ingredienteLi)
+        listGroup.appendChild(ingredienteLi);
       }
     }
 
-    modalBody.appendChild(listGroup)
+    modalBody.appendChild(listGroup);
+
+    const modalFooter = document.querySelector(".modal-footer");
+    limpiarHtml(modalFooter);
+
+    // Botones de cerrar y favorito
+    const btnFavorito = document.createElement("BUTTON");
+    btnFavorito.classList.add("btn", "btn-danger", "col");
+    btnFavorito.textContent = "Guardar Favorito";
+
+    const btnCerrarModal = document.createElement("BUTTON");
+    btnCerrarModal.classList.add("btn", "btn-secondary", "col");
+    btnCerrarModal.textContent = "Cerrar";
+    btnCerrarModal.onclick = function () {
+      modal.hide();
+    };
+
+    modalFooter.appendChild(btnFavorito);
+    modalFooter.appendChild(btnCerrarModal);
 
     // Muestra el modal
     modal.show();
-
   }
 
-  function limpiarHtml(selector){
-    while(selector.firstChild){
-      resultado.removeChild(resultado.firstChild);
+  function limpiarHtml(selector) {
+    while (selector.firstChild) {
+      selector.removeChild(selector.firstChild);
     }
   }
 }
-
 
 document.addEventListener("DOMContentLoaded", iniciarApp);
