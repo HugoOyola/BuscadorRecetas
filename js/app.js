@@ -32,6 +32,13 @@ function iniciarApp() {
   }
 
   function mostrarRecetas(recetas = []) {
+    limpiarHtml(resultado)
+
+    const heading = document.createElement("H2");
+    heading.classList.add("text-center", "text-black","my-5");
+    heading.textContent = recetas.length ? "Recetas" : "No se encontraron recetas";
+    resultado.appendChild(heading);
+
     // Iterar las recetas
     recetas.forEach((receta) => {
       const { strMeal, strMealThumb, idMeal } = receta;
@@ -54,13 +61,15 @@ function iniciarApp() {
       recetaHeading.classList.add("card-title", "mb-3");
       recetaHeading.textContent = strMeal;
 
-      const recetaBoton = document.createElement("BUTTON");
-      recetaBoton.classList.add("btn", "btn-danger", "w-100");
-      recetaBoton.textContent = "Ver receta";
+      const recetaBottun = document.createElement("BUTTON");
+      recetaBottun.classList.add("btn", "btn-danger", "w-100");
+      recetaBottun.textContent = "Ver receta";
+      // recetaBottun.dataset.bsTarget = "#modal"
+      // recetaBottun.dataset.bsToggle = "modal"
 
       // Inyectar en el codigo HTML
       recetaCardBody.appendChild(recetaHeading);
-      recetaCardBody.appendChild(recetaBoton);
+      recetaCardBody.appendChild(recetaBottun);
 
       recetaCard.appendChild(recetaImagen);
       recetaCard.appendChild(recetaCardBody);
@@ -69,6 +78,12 @@ function iniciarApp() {
 
       resultado.appendChild(recetaContenedor);
     })
+  }
+
+  function limpiarHtml(selector){
+    while(selector.firstChild){
+      resultado.removeChild(resultado.firstChild);
+    }
   }
 }
 
