@@ -66,6 +66,9 @@ function iniciarApp() {
       recetaBottun.textContent = "Ver receta";
       // recetaBottun.dataset.bsTarget = "#modal"
       // recetaBottun.dataset.bsToggle = "modal"
+      recetaBottun.onclick = () => {
+        seleccionarReceta(idMeal);
+      }
 
       // Inyectar en el codigo HTML
       recetaCardBody.appendChild(recetaHeading);
@@ -80,11 +83,24 @@ function iniciarApp() {
     })
   }
 
+  function seleccionarReceta(id){
+    const url = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`;
+
+    fetch(url)
+      .then((respuesta) => respuesta.json())
+      .then((resultado) => mostrarRecetaModal(resultado.meals[0]));
+  }
+
+  function mostrarRecetaModal(receta){
+
+  }
+
   function limpiarHtml(selector){
     while(selector.firstChild){
       resultado.removeChild(resultado.firstChild);
     }
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", iniciarApp);
