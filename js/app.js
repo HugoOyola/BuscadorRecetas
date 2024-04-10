@@ -1,11 +1,18 @@
 function iniciarApp() {
-  const selectCategorias = document.querySelector("#categorias");
-  selectCategorias.addEventListener("change", seleccionarCategoria);
-
   const resultado = document.querySelector("#resultado");
-  const modal = new bootstrap.Modal("#modal", {});
+  const selectCategorias = document.querySelector("#categorias");
 
-  obtenerCategorias();
+  if (selectCategorias) {
+    selectCategorias.addEventListener("change", seleccionarCategoria);
+    obtenerCategorias();
+  }
+
+  const favoritosDiv = document.querySelector(".favoritos");
+  if (favoritosDiv) {
+    obtenerFavoritos();
+  }
+
+  const modal = new bootstrap.Modal("#modal", {});
 
   function obtenerCategorias() {
     const url = "https://www.themealdb.com/api/json/v1/1/categories.php";
@@ -52,15 +59,15 @@ function iniciarApp() {
 
       const recetaImagen = document.createElement("IMG");
       recetaImagen.classList.add("card-img-top");
-      recetaImagen.lastChild = `Imagen de la receta ${strMeal}`;
-      recetaImagen.src = strMealThumb;
+      recetaImagen.lastChild = `Imagen de la receta ${strMeal ?? receta.titulo}`;
+      recetaImagen.src = strMealThumb ?? receta.img;
 
       const recetaCardBody = document.createElement("DIV");
       recetaCardBody.classList.add("card-body");
 
       const recetaHeading = document.createElement("H3");
       recetaHeading.classList.add("card-title", "mb-3");
-      recetaHeading.textContent = strMeal;
+      recetaHeading.textContent = strMeal ?? receta.titulo;
 
       const recetaBottun = document.createElement("BUTTON");
       recetaBottun.classList.add("btn", "btn-danger", "w-100");
@@ -68,7 +75,7 @@ function iniciarApp() {
       // recetaBottun.dataset.bsTarget = "#modal"
       // recetaBottun.dataset.bsToggle = "modal"
       recetaBottun.onclick = () => {
-        seleccionarReceta(idMeal);
+        seleccionarReceta(idMeal ?? receta.id);
       };
 
       // Inyectar en el codigo HTML
@@ -139,7 +146,7 @@ function iniciarApp() {
       if (existeStorage(idMeal)) {
         eliminarFavorito(idMeal);
         btnFavorito.textContent = "Guardar Favorito";
-        mostrarToast("Eliminado Correctamente")
+        mostrarToast("Eliminado Correctamente");
         return;
       }
 
@@ -149,7 +156,7 @@ function iniciarApp() {
         img: strMealThumb,
       });
       btnFavorito.textContent = "Eliminar Favorito";
-      mostrarToast("Agregado Correctamente")
+      mostrarToast("Agregado Correctamente");
     };
 
     const btnCerrarModal = document.createElement("BUTTON");
@@ -169,12 +176,22 @@ function iniciarApp() {
   function agregarFavorito(receta) {
     const favoritos = JSON.parse(localStorage.getItem("favoritos")) ?? [];
     localStorage.setItem("favoritos", JSON.stringify([...favoritos, receta]));
+
+    if (favoritosDiv) {
+      const nuevosFavoritos = JSON.parse(localStorage.getItem("favoritos"));
+      limpiarHtml(resultado);
+      mostrarRecetas(nuevosFavoritos);
+    }
   }
 
   function eliminarFavorito(id) {
     const favoritos = JSON.parse(localStorage.getItem("favoritos")) ?? [];
     const nuevosFavoritos = favoritos.filter((favorito) => favorito.id !== id);
     localStorage.setItem("favoritos", JSON.stringify(nuevosFavoritos));
+    if (favoritosDiv) {
+      limpiarHtml(resultado);
+      mostrarRecetas(nuevosFavoritos);
+    }
   }
 
   function existeStorage(id) {
@@ -188,6 +205,19 @@ function iniciarApp() {
     const toast = new bootstrap.Toast(toastDiv);
     toastBody.textContent = mensaje;
     toast.show();
+  }
+
+  function obtenerFavoritos() {
+    const favoritos = JSON.parse(localStorage.getItem("favoritos")) ?? [];
+    if (favoritos.length) {
+      mostrarRecetas(favoritos);
+      return;
+    }
+
+    const noFavoritos = document.createElement("P");
+    noFavoritos.textContent = "No hay favoritos";
+    noFavoritos.classList.add("fs-4", "text-center", "font-bold", "mt-5");
+    favoritosDiv.appendChild(noFavoritos);
   }
 
   function limpiarHtml(selector) {
